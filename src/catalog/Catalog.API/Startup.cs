@@ -1,5 +1,7 @@
 using Catalog.API.Data;
 using Catalog.API.Data.Interfaces;
+using Catalog.API.Repositories;
+using Catalog.API.Repositories.Interfaces;
 using Catalog.API.settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +37,14 @@ namespace Catalog.API
             services.AddSingleton<ICatalogDatabaseSettings>(sp => sp.GetRequiredService<IOptions<CatalogDatabaseSettings>>().Value);
 
             services.AddTransient<ICatalogContext, CatalogContext>();
+
+            services.AddTransient<IProductRepository, ProductRepository>();
+
+            services.AddSwaggerGen(
+                c =>
+                {
+                    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {Title = "Catalog API", Version = "v1"});
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +62,12 @@ namespace Catalog.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json","Catalog API V1");
             });
         }
     }
