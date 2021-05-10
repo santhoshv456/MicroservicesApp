@@ -3,9 +3,11 @@ services:
   basket.api: 
     depends_on: 
       - basketdb
+      - rabbitmq
     environment: 
       - ASPNETCORE_ENVIRONMENT=Development
       - "ConnectionStrings:Redis=basketdb:6379"
+      - "EventBus:HostName=rabbitmq"
     ports: 
       - "8001:80"
     volumes: 
@@ -34,4 +36,10 @@ services:
     restart: always
     volumes: 
       - "${WEBAPP_STORAGE_HOME}/site:/data/db"
+  rabbitmq: 
+    container_name: rabbitmq
+    ports: 
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
 version: "3.4"
